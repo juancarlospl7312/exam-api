@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SubscribeRequest;
 use App\Services\SubscriberService;
 use Illuminate\Http\Request;
+use Exception;
 
 class SubscriberController extends Controller
 {
@@ -18,12 +19,19 @@ class SubscriberController extends Controller
 
     public function subscribe(SubscribeRequest $request)
     {
-        $subscriber = $this->subscriberService
-            ->subscribe($request->validated());
+        try {
+            $subscriber = $this->subscriberService
+                ->subscribe($request->validated());
 
-        return response()->json([
-            'message' => 'Subscriber created successfully',
-            'data' => $subscriber
-        ], 201);
+            return response()->json([
+                'message' => 'Subscriber created successfully',
+                'data' => $subscriber
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+
     }
 }
