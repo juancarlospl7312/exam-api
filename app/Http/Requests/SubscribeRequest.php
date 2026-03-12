@@ -3,7 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 class SubscribeRequest extends FormRequest
 {
@@ -26,5 +29,13 @@ class SubscribeRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:subscribers,email'
         ];
+    }
+
+    protected function failedValidation(Validator $validator): JsonResponse
+    {
+        $response = response()->json([
+            'message' => $validator->errors()->all(),
+        ], 422);
+        throw new ValidationException($validator, $response);
     }
 }
